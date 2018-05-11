@@ -111,45 +111,39 @@ public class StringLiteralTemplateProcessor extends TreeTranslator implements IC
   private Boolean getDisableAnnotationValue( JCTree.JCModifiers modifiers )
   {
     Boolean disable = null;
-    Boolean disableGlobally = Boolean.valueOf(System.getProperty("manifold.string.template.disable"));
-    if( disableGlobally) {
-      return true;
-    } else {
-      for( JCTree.JCAnnotation anno: modifiers.getAnnotations() )
+    for( JCTree.JCAnnotation anno: modifiers.getAnnotations() )
+    {
+      if( anno.annotationType.toString().contains( DisableStringLiteralTemplates.class.getSimpleName() ) )
       {
-        if( anno.annotationType.toString().contains( DisableStringLiteralTemplates.class.getSimpleName() ) )
+        try
         {
-          try
-          {
-            com.sun.tools.javac.util.List<JCTree.JCExpression> args = anno.getArguments();
-            if( args.isEmpty() )
-            {
-              disable = true;
-            }
-            else
-            {
-              JCTree.JCExpression argExpr = args.get( 0 );
-              Object value;
-              if( argExpr instanceof JCTree.JCLiteral &&
-                  (value = ((JCTree.JCLiteral)argExpr).getValue()) instanceof Boolean )
-              {
-                disable = (boolean)value;
-              }
-              else
-              {
-                Log.instance( _javacTask.getContext() ).error( argExpr.pos(),
-                  "proc.messager", "Only boolean literal values 'true' and 'false' allowed here" );
-                disable = true;
-              }
-            }
-          }
-          catch( Exception e )
+          com.sun.tools.javac.util.List<JCTree.JCExpression> args = anno.getArguments();
+          if( args.isEmpty() )
           {
             disable = true;
           }
+          else
+          {
+            JCTree.JCExpression argExpr = args.get( 0 );
+            Object value;
+            if( argExpr instanceof JCTree.JCLiteral &&
+                (value = ((JCTree.JCLiteral)argExpr).getValue()) instanceof Boolean )
+            {
+              disable = (boolean)value;
+            }
+            else
+            {
+              Log.instance( _javacTask.getContext() ).error( argExpr.pos(),
+                "proc.messager", "Only boolean literal values 'true' and 'false' allowed here" );
+              disable = true;
+            }
+          }
+        }
+        catch( Exception e )
+        {
+          disable = true;
         }
       }
-
     }
     return disable;
   }

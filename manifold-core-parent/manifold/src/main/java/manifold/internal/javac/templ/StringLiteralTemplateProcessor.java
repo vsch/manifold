@@ -271,7 +271,7 @@ public class StringLiteralTemplateProcessor extends TreeTranslator implements IC
         {
           JCDiagnostic jcDiag = ((ClientCodeWrapper.DiagnosticSourceUnwrapper)diag).d;
           String code = debaseMsgCode( diag );
-          Log.instance( _javacTask.getContext() ).error( new JCDiagnostic.SimpleDiagnosticPosition( literalOffset + 1 + comp.getOffset() ), code, jcDiag.getArgs() );
+          Log.instance( _javacTask.getContext() ).warning( new JCDiagnostic.SimpleDiagnosticPosition( literalOffset + 1 + comp.getOffset() ), code, jcDiag.getArgs() );
         }
       }
       return true;
